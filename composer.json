@@ -1,0 +1,40 @@
+{
+    "name": "nostriphant/nostripub",
+    "description": "Thin ActivityPub and nostr bridge",
+    "type": "project",
+    "require": {
+        "php": "^8.4",
+        "nostriphant/client": "^0.3"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "nostriphant\\nostripub\\": "src/",
+            "nostriphant\\nostripubTests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rik Meijer",
+            "email": "nostriphant@rikmeijer.nl"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/pest"
+        ],
+        "next": [
+            "git tag -f `cat VERSION` @no_additional_args",
+            "echo @additional_args > VERSION",
+            "git commit -am 'start VERSION @additional_args'"
+        ]
+    }
+}
