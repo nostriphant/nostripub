@@ -1,2 +1,15 @@
 # nostripub
 Bridging ActivityPub and nostr
+
+The goal of this app is being able to communicate with users on nostr as a ActivityPub-user or vice-versa as a nostr-user with ActivityPub-users. The main difference with [Mostr](https://mostr.pub/) is that nostripub does not implement a relay itself. It is a thin HTTP-API layer combined with a nostr client to relay messages between nostr and ActivityPub. It requires you to have a nostr-pubkey and a ActivityPub-account.
+
+# ActivityPub -> Nostr
+nostripub follows that account and any post will be forwarded to nostr (being signed by your signer-app). Posting to nostr requires a signer-app (eg Amber) to sign your events off to nostr, therefore you'll have to register your pubkey with your ActivityPub-account to follow (eg https://mastodon.social/@rik1984). Nostripub sends that message to preconfigured relays (you can set them up when registering your pubkey, a default list will be set based on your profile).
+
+# Nostr -> ActivityPub
+nostripub listens on pre-configured relays (again during registration or your profile list of relays). There are a few scenario's/types of messages:
+- public messages from pubkeys you follow
+- hashtags you follow
+- private messages sent to your pubkey (NIP46 decrpyt)
+
+
