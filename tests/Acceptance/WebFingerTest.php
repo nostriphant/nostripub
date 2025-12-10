@@ -5,9 +5,13 @@ beforeAll(function() {
 });
 
 describe('webfinger', function() {
-    it('responds with a 200 status code for a proper domain (nostripub.tld)')->get('/.well-known/webfinger?resource=acct%3Abob%40nostripub.tld')->assertStatus('200');
-    it('responds with a 422 status code for a wrong domain (example.org)')->get('/.well-known/webfinger?resource=acct%3Abob%example.org')->assertStatus('422');
-
+    it('responds with a 422 status code for a wrong domain (example.org)')->get('/.well-known/webfinger?resource=acct%3Abob%example.org')->bundleExpectations(function(string $status, string $content) {
+        expect($status)->toBe('422');
+    });
+    
+    it('responds with a 200 status code for a proper domain (nostripub.tld)')->get('/.well-known/webfinger?resource=acct%3Abob%40nostripub.tld')->bundleExpectations(function(string $status, string $content) {
+        expect($status)->toBe('200');
+    });
         /**
          * {
             "subject": "acct:bob@example.com",

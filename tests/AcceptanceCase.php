@@ -27,8 +27,8 @@ abstract class AcceptanceCase extends BaseTestCase
         return new class($info['http_code'], $body) {
             public function __construct(private string $status, private string $content) {
             }
-            public function assertStatus(string $expected_status) : void {
-                expect($this->status)->toBe($expected_status);
+            public function bundleExpectations(callable $expectations) : void {
+                $expectations($this->status, $this->content);
             }
         };
     }
