@@ -12,4 +12,5 @@ nostripub listens on pre-configured relays (again during registration or your pr
 - hashtags you follow
 - private messages sent to your pubkey (NIP46 decrpyt)
 
-
+# Registration and configuration
+this is to be designed, but the goal is to allow registration/configuration through direct messaging with an agent
