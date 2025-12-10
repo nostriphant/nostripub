@@ -9,7 +9,7 @@ if (str_ends_with($requested_resource, $_ENV['NOSTRIPUB_DOMAIN']) === false) {
 }
 
 print '{
-            "subject": "acct:bob@example.com",
+            "subject": "'.$requested_resource.'",
             "aliases": [
                     "https://www.example.com/~bob/"
             ],

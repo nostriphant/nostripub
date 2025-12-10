@@ -5,36 +5,27 @@ beforeAll(function() {
 });
 
 describe('webfinger', function() {
-    it('responds with a 422 status code for a wrong domain (example.org)')->get('/.well-known/webfinger?resource=acct%3Abob%example.org')->bundleExpectations(function(string $status, string $content) {
+    it('responds with a 422 status code for a wrong domain (example.org)')
+            ->get('/.well-known/webfinger?resource=acct%3Abob%example.org')
+            ->bundleExpectations(function(string $status, string $content) {
         expect($status)->toBe('422');
     });
     
-    it('responds with a 200 status code for a proper domain (nostripub.tld)')->get('/.well-known/webfinger?resource=acct%3Abob%40nostripub.tld')->bundleExpectations(function(string $status, string $content) {
+    it('responds with a 200 status code for a proper domain (nostripub.tld)')
+            ->get('/.well-known/webfinger?resource=acct%3Anpub1efz8l77esdtpw6l359sjvakm7azvyv6mkuxphjdk3vfzkgxkatrqlpf9s4%40nostripub.tld')
+            ->bundleExpectations(function(string $status, string $content) {
         expect($status)->toBe('200');
+        expect($content)->toBeJson();
+        $json = json_decode($content, true);
+        expect($json['subject'])->toBe('acct:npub1efz8l77esdtpw6l359sjvakm7azvyv6mkuxphjdk3vfzkgxkatrqlpf9s4@nostripub.tld');
     });
-        /**
-         * {
-            "subject": "acct:bob@example.com",
-            "aliases": [
-                    "https://www.example.com/~bob/"
-            ],
-            "properties": {
-                    "http://example.com/ns/role": "employee"
-            },
-            "links": [
-                    {
-                            "rel": "http://webfinger.net/rel/profile-page",
-                            "href": "https://www.example.com/~bob/"
-                    },
-                    {
-                            "rel": "http://webfinger.net/rel/avatar",
-                            "type": "image/png",
-                            "href": "https://www.example.com/~bob/avatar.png"
-                    }
-            ]
-    }
-         */
-    
+    it('responds for different user')
+            ->get('/.well-known/webfinger?resource=acct%3Anpub16we82lw9jyxn3nqzafk4zsv7kt08f7csjut9q8t65aejvdde7ydsde8xln%40nostripub.tld')
+            ->bundleExpectations(function(string $status, string $content) {
+        expect($content)->toBeJson();
+        $json = json_decode($content, true);
+        expect($json['subject'])->toBe('acct:npub16we82lw9jyxn3nqzafk4zsv7kt08f7csjut9q8t65aejvdde7ydsde8xln@nostripub.tld');
+    });
 });
 
 afterAll(function() {
