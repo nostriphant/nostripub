@@ -24,13 +24,12 @@ abstract class AcceptanceCase extends BaseTestCase
         $info = curl_getinfo($curl);
         curl_close($curl);
         
-        return new class($info['http_code'], $body) {
-            public function __construct(private string $status, private string $content) {
+        return expect(new class($info['http_code'], $info['http_code'] === 200 ? json_decode($body, true) : null) {
+            public ?string $subject;
+            public function __construct(public string $status, ?array $content) {
+                $this->subject = $content['subject'] ?? null;
             }
-            public function bundleExpectations(callable $expectations) : void {
-                $expectations($this->status, $this->content);
-            }
-        };
+        });
     }
     
     

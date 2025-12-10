@@ -18,28 +18,35 @@ try {
     exit('Unprocessable Content');
 }
 
+switch ($bech32->type) {
+    case 'npub':
+        //$public_key_hex = $bech32();
+        //$public_key_bech32 = (string) (Bech32::npub($public_key_hex));
 
-
-//$public_key_hex = $bech32();
-//$public_key_bech32 = (string) (Bech32::npub($public_key_hex));
-
-print '{
-            "subject": "'.$requested_resource.'",
-            "aliases": [
-                    "https://www.example.com/~bob/"
-            ],
-            "properties": {
-                    "http://example.com/ns/role": "employee"
-            },
-            "links": [
-                    {
-                            "rel": "http://webfinger.net/rel/profile-page",
-                            "href": "https://www.example.com/~bob/"
+        print '{
+                    "subject": "'.$requested_resource.'",
+                    "aliases": [
+                            "https://www.example.com/~bob/"
+                    ],
+                    "properties": {
+                            "http://example.com/ns/role": "employee"
                     },
-                    {
-                            "rel": "http://webfinger.net/rel/avatar",
-                            "type": "image/png",
-                            "href": "https://www.example.com/~bob/avatar.png"
-                    }
-            ]
-    }';
+                    "links": [
+                            {
+                                    "rel": "http://webfinger.net/rel/profile-page",
+                                    "href": "https://www.example.com/~bob/"
+                            },
+                            {
+                                    "rel": "http://webfinger.net/rel/avatar",
+                                    "type": "image/png",
+                                    "href": "https://www.example.com/~bob/avatar.png"
+                            }
+                    ]
+            }';
+
+        break;
+    
+    default:
+        header('HTTP/1.1 422 Unprocessable Content', true);
+        exit('Unprocessable Content');
+}
