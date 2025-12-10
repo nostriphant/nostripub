@@ -1,0 +1,54 @@
+<?php
+
+namespace nostriphant\nostripubTests;
+
+readonly class Process {
+    
+    private mixed $process;
+    
+    public function __construct(string $process_id, array $cmd, array $env, callable $runtest) {
+        $cwd = getcwd();
+        $output_file = $cwd . "/logs/{$process_id}-output.log";
+        $error_file = $cwd . "/logs/{$process_id}-errors.log";
+        $descriptorspec = [
+            0 => ["pipe", "r"],  
+            1 => ["file", $output_file, "w"],  
+            2 => ["file", $error_file, "w"]
+        ];
+
+        $this->process = proc_open($cmd, $descriptorspec, $pipes, $cwd, $env);
+        
+        $output = fopen($output_file, 'r');
+        $error = fopen($error_file, 'r');
+        do {
+        } while ($runtest(fgets($output)) && $runtest(fgets($error)) === false);
+        fclose($output);
+        fclose($error);
+    }
+    
+    public function __invoke(int $signal = 15) : array {
+        if ($this->process === false) {
+            return [];
+        } elseif (is_resource($this->process) === false) {
+            return [];
+        }
+        
+        $status = proc_get_status($this->process);
+
+        proc_terminate($this->process, 15);
+        while ($status['running']) {
+            $status = proc_get_status($this->process);
+        }
+
+        proc_close($this->process);
+        return $status;
+    }
+    
+    static function gracefulExit() {
+        pcntl_signal(SIGTERM, function(int $sig, array $info) {
+            printf("Received INT signal, exiting gracefully\n");
+            exit(0);
+        }, false );
+        pcntl_async_signals(true);
+    }
+}
