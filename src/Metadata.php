@@ -14,11 +14,7 @@ readonly class Metadata {
 
             $subscription_id = uniqid();
 
-            $listen = $client(function(\nostriphant\NIP01\Transmission $send) use ($npub, $discovery_relay, $subscription_id) {
-                $message = Message::req($subscription_id, ["kinds" => [0], "authors" => [($npub)()]]);
-                error_log('request to '. $discovery_relay.': '. $message);
-                $send($message);
-            });
+            $listen = $client(fn(\nostriphant\NIP01\Transmission $send) => $send(Message::req($subscription_id, ["kinds" => [0], "authors" => [($npub)()]])));
 
             $listen(function(\nostriphant\NIP01\Message $message, callable $stop) use (&$metadata, $discovery_relay, $subscription_id) {
                 // code to handle incoming messages
