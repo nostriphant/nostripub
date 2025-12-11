@@ -65,11 +65,15 @@ if (str_contains($handle, '@') === false) {
     }
 }
 
-    
+$entity = [
+    "subject" => $requested_resource,
+    "aliases" => [],
+    "properties"=> [],
+    "links" => []
+];
 switch ($bech32->type) {
     case 'npub':
-
-        $links = [[
+        $entity['links'] = [[
                 "rel" => "http://webfinger.net/rel/profile-page",
                 "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$bech32
         ]];
@@ -83,22 +87,15 @@ switch ($bech32->type) {
             $info = curl_getinfo($curl);
             curl_close($curl);
 
-            $links[] = [
+            $entity['links'][] = [
                 "rel" => "http://webfinger.net/rel/avatar",
                 "type" => $info['content_type'],
                 "href" => $info['url']
             ];
         }
-        //$public_key_hex = $bech32();
-        //$public_key_bech32 = (string) (Bech32::npub($public_key_hex));
+        
         header('Content-Type: application/jrd+json', true);
-        print '{
-                    "subject": "'.$requested_resource.'",
-                    "aliases": [],
-                    "properties": {},
-                    "links": '. json_encode($links). '
-
-            }';
+        print json_encode($entity);
 
         break;
 
