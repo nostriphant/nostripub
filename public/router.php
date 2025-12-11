@@ -2,9 +2,6 @@
 
 require_once dirname(__DIR__) . '/bootstrap.php';
 
-use nostriphant\NIP01\Message;
-use nostriphant\Client\Client;
-
 $browser_hostname = $_SERVER["HTTP_HOST"];
 $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
 $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay,[
@@ -38,7 +35,6 @@ if (str_contains($handle, '@') === false) {
         exit('Unprocessable Content');
     }
     
-    $relays = [];
 } else {
     list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
     $curl = curl_init('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
@@ -64,52 +60,21 @@ if (str_contains($handle, '@') === false) {
         exit('Unprocessable Content');
     }
     
-    $relays = $json['relays'] ?? [];
+    if (isset($json['relays'])) {
+        $discovery_relays = $json['relays'];
+    }
 }
 
     
 switch ($bech32->type) {
     case 'npub':
-        if (count($relays) === 0) {
-            // we need to discover where this npub is posting
-            $metadata;
-            foreach ($discovery_relays as $discovery_relay) {
-                $client = Client::connectToUrl($discovery_relay);
-                error_log('Connecting to ' . $discovery_relay);
-
-                $subscription_id = uniqid();
-
-                $listen = $client(function(\nostriphant\NIP01\Transmission $send) use ($bech32, $discovery_relay, $subscription_id) {
-                    $message = Message::req($subscription_id, ["kinds" => [0], "authors" => [$bech32()]]);
-                    error_log('request to '. $discovery_relay.': '. $message);
-                    $send($message);
-                });
-
-                $listen(function(\nostriphant\NIP01\Message $message, callable $stop) use (&$metadata, $discovery_relay, $subscription_id) {
-                    // code to handle incoming messages
-                    error_log('response from '. $discovery_relay.': '. $message);
-                    if ($message->payload[0] !== $subscription_id) {
-                        return;
-                    } elseif ($message->type === 'EOSE') {
-                        $stop(); // stops listening
-                        return;
-                    }
-
-                    $metadata = new \nostriphant\NIP01\Event(...$message->payload[1]);
-                    $stop(); // stops listening
-                });
-
-                if (isset($metadata)) {
-                    break;
-                }
-            }
-        }
 
         $links = [[
                 "rel" => "http://webfinger.net/rel/profile-page",
                 "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$bech32
         ]];
-        $avatar = '';
+        
+        $metadata = nostriphant\nostripub\Metadata::discoverByNpub($bech32, $discovery_relays);
         if (\nostriphant\NIP01\Event::hasTag($metadata, "picture")) {
             $avatar_url = \nostriphant\NIP01\Event::extractTagValues($metadata, "picture")[0][0];
             $curl = curl_init($avatar_url);
