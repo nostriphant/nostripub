@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65ba68ac0ab050fd4b36c4371b54caf1",
+    "content-hash": "cb2d83523a47d972343579535bbaea48",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1948,16 +1948,16 @@
         },
         {
             "name": "nostriphant/client",
-            "version": "0.3.1",
+            "version": "0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nostriphant/client.git",
-                "reference": "2a814e511d680cd55636c07466e258620f9b52a6"
+                "reference": "9f7d657cb0abb24dcd7047168ae383d6cad4b739"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nostriphant/client/zipball/2a814e511d680cd55636c07466e258620f9b52a6",
-                "reference": "2a814e511d680cd55636c07466e258620f9b52a6",
+                "url": "https://api.github.com/repos/nostriphant/client/zipball/9f7d657cb0abb24dcd7047168ae383d6cad4b739",
+                "reference": "9f7d657cb0abb24dcd7047168ae383d6cad4b739",
                 "shasum": ""
             },
             "require": {
@@ -1970,7 +1970,7 @@
                 "mockery/mockery": "^1.6",
                 "pestphp/pest": "^4.0"
             },
-            "type": "project",
+            "type": "library",
             "autoload": {
                 "psr-4": {
                     "nostriphant\\Client\\": "src/",
@@ -1990,9 +1990,9 @@
             "description": "Simple Nostr client",
             "support": {
                 "issues": "https://github.com/nostriphant/client/issues",
-                "source": "https://github.com/nostriphant/client/tree/0.3.1"
+                "source": "https://github.com/nostriphant/client/tree/0.3.2"
             },
-            "time": "2025-10-21T11:35:25+00:00"
+            "time": "2025-12-11T07:38:45+00:00"
         },
         {
             "name": "nostriphant/functional",
@@ -7302,10 +7302,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.4"
-    },
-    "platform-dev": {
+        "php": "^8.4",
         "ext-curl": "*"
     },
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
