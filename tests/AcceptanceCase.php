@@ -26,8 +26,10 @@ abstract class AcceptanceCase extends BaseTestCase
         
         return expect(new class($info['http_code'], $info['http_code'] === 200 ? json_decode($body, true) : null) {
             public ?string $subject;
+            public ?array $links;
             public function __construct(public string $status, ?array $content) {
                 $this->subject = $content['subject'] ?? null;
+                $this->links = $content['links'] ?? null;
             }
         });
     }
