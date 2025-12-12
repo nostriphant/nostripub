@@ -15,6 +15,23 @@ describe('webfinger', function() {
             ->get('/.well-known/webfinger?resource=acct%3Arik%40rikmeijer.nl')
             ->status->toBe('302');
     
+    
+    it('responds with a 200 status code for a resource at a different wrapped domain')
+            ->get('/.well-known/webfinger?resource=acct%3Arik.at.rikmeijer.nl%40127.0.0.1:8080')
+            ->status->toBe('200')
+            ->subject->toBe('acct:rik.at.rikmeijer.nl@127.0.0.1:8080')
+            ->links->toBe([
+                            [
+                                    "rel" => "http://webfinger.net/rel/profile-page",
+                                    "href" =>  "http://127.0.0.1:8080/@npub1efz8l77esdtpw6l359sjvakm7azvyv6mkuxphjdk3vfzkgxkatrqlpf9s4"
+                            ],
+                            [
+                                    "rel" => "http://webfinger.net/rel/avatar",
+                                    "type"=> "image/png",
+                                    "href"=> "https://gravatar.com/userimage/128219001/7b07009f6c5aff6f13b1050c1b354208.jpeg?size=256"
+                            ]
+                    ]);
+    
     it('responds with a 404 status code for a non-existing (or unretrievable) NIP-05 identifier, because wrong domain')
             ->get('/.well-known/webfinger?resource=nostr%3Abob%40example.tlb')
             ->status->toBe('404');

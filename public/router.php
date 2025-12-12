@@ -1,5 +1,26 @@
 <?php
 
+function nip05_lookup(string $nostr_user, string $nostr_domain) : array {
+    error_log('Requesting https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
+    $curl = curl_init('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec($curl);
+    $info = curl_getinfo($curl);
+    curl_close($curl);
+    
+    if ($info['http_code'] !== 200) {
+        error_log('Received not OK');
+        return [];
+    }
+
+    $json = json_decode($body, true);
+    if (isset($json['names'][$nostr_user]) === false) {
+        error_log($nostr_user . ' does not exists at ' . $nostr_domain);
+        return [];
+    }
+    return $json;
+}
+
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 $browser_hostname = $_SERVER["HTTP_HOST"];
@@ -20,49 +41,65 @@ $requested_resource = $_GET['resource'];
 
 list($scheme, $handle) = explode(':', $requested_resource, 2);
 
-if ($scheme === 'acct') {
-    list($user, $domain) = explode('@', $handle, 2);
-    header('HTTP/1.1 302 Found', true);
-    header('Location: https://' . $domain . '/.well-known/webfinger?resource=' . urlencode($requested_resource));
-    exit('Found');
-}
+switch ($scheme) {
+    case 'acct':
+        list($user, $domain) = explode('@', $handle, 2);
 
-if (str_contains($handle, '@') === false) {
-    try {
-        $bech32 = new nostriphant\NIP19\Bech32($handle);
-    } catch (Exception $e) {
-        header('HTTP/1.1 422 Unprocessable Content', true);
-        exit('Unprocessable Content');
-    }
-    
-} else {
-    list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
-    $curl = curl_init('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $body = curl_exec($curl);
-    $info = curl_getinfo($curl);
-    curl_close($curl);
-    if ($info['http_code'] !== 200) {
-        header('HTTP/1.1 404 Not found', true);
-        exit('Not found');
-    }
+        if ($domain !== $browser_hostname) {
+            header('HTTP/1.1 302 Found', true);
+            header('Location: https://' . $domain . '/.well-known/webfinger?resource=' . urlencode($requested_resource));
+            exit('Found');
+        }
 
-    $json = json_decode($body, true);
-    if (isset($json['names'][$nostr_user]) === false) {
-        header('HTTP/1.1 404 Not found', true);
-        exit('Not found');
-    }
 
-    try {
-        $bech32 = nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]);
-    } catch (Exception $e) {
-        header('HTTP/1.1 422 Unprocessable Content', true);
-        exit('Unprocessable Content');
-    }
-    
-    if (isset($json['relays'])) {
-        $discovery_relays = $json['relays'];
-    }
+        list($nostr_user, $nostr_domain) = explode('.at.', $user, 2);
+        $json = nip05_lookup($nostr_user, $nostr_domain);;
+        if (empty($json)) {
+            header('HTTP/1.1 404 Not found', true);
+            exit('Not found');
+        }
+
+        try {
+            $bech32 = nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]);
+        } catch (Exception $e) {
+            header('HTTP/1.1 422 Unprocessable Content', true);
+            exit('Unprocessable Content');
+        }
+
+        if (isset($json['relays'])) {
+            $discovery_relays = $json['relays'];
+        }
+        break;
+        
+    case 'nostr':
+        if (str_contains($handle, '@') === false) {
+            try {
+                $bech32 = new nostriphant\NIP19\Bech32($handle);
+            } catch (Exception $e) {
+                header('HTTP/1.1 422 Unprocessable Content', true);
+                exit('Unprocessable Content');
+            }
+            break;
+        }
+        
+        list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
+        $json = nip05_lookup($nostr_user, $nostr_domain);
+        if (empty($json)) {
+            header('HTTP/1.1 404 Not found', true);
+            exit('Not found');
+        }
+
+        try {
+            $bech32 = nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]);
+        } catch (Exception $e) {
+            header('HTTP/1.1 422 Unprocessable Content', true);
+            exit('Unprocessable Content');
+        }
+
+        if (isset($json['relays'])) {
+            $discovery_relays = $json['relays'];
+        }
+        break;
 }
 
 $entity = [
