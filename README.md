@@ -17,3 +17,11 @@ nostripub listens on pre-configured relays (again during registration or your pr
 
 # Registration and configuration
 this is to be designed, but the goal is to allow registration/configuration through direct messaging with an agent
+
+# TODO
+- [ ] Subscribe from Mastodon to nostr pubkeys
+- [ ] Subscribe from nostr to Mastodon accounts
+- [ ] Follow hashtags from nostr on Mastodon
+- [ ] Follow hashtags from Mastodon on nostr
+- [ ] Send private dms from Mastodon to nostr
+- [ ] Send private dms from nostr to Mastodon
