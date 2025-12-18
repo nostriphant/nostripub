@@ -21,33 +21,7 @@ $requested_resource = $_GET['resource'];
 
 list($scheme, $handle) = explode(':', $requested_resource, 2);
 
-$cache = dirname(__DIR__) . '/cache';
-    
-$http = function(string $url, callable $error) use ($cache) : array {
-    $cache_file = $cache . '/'. md5($url);
-    if (file_exists($cache_file . '.json')) {
-        $body = file_get_contents($cache_file . '.json');
-    } elseif (file_exists($cache_file . '.error')) {
-        exit($error());
-        
-    } else {
-        error_log('Requesting ' . $url);
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $body = curl_exec($curl);
-        $info = curl_getinfo($curl);
-        curl_close($curl);
-    
-        if ($info['http_code'] !== 200) {
-            touch($cache_file . '.error');
-            exit($error());
-        }
-        
-        file_put_contents($cache_file . '.json', $body);
-    }
-
-    return json_decode($body, true); 
-};
+$http = new \nostriphant\nostripub\HTTP(dirname(__DIR__) . '/cache');
 
 switch ($scheme) {
     case 'acct':
