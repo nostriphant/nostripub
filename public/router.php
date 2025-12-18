@@ -23,6 +23,11 @@ list($scheme, $handle) = explode(':', $requested_resource, 2);
 
 $http = new \nostriphant\nostripub\HTTP(dirname(__DIR__) . '/cache');
 
+$nip05_lookup = NIP05::lookup($discovery_relays, $http, function() {
+    header('HTTP/1.1 404 Not found', true);
+    return 'Not found';
+});
+
 switch ($scheme) {
     case 'acct':
         list($user, $domain) = explode('@', $handle, 2);
@@ -31,18 +36,12 @@ switch ($scheme) {
             header('Location: https://' . $domain . '/.well-known/webfinger?resource=' . urlencode($requested_resource));
             exit('Found');
         }
-        $nip05 = NIP05::lookup(str_replace('.at.', '@', $user), $discovery_relays, $http, function() {
-            header('HTTP/1.1 404 Not found', true);
-            return 'Not found';
-        });
+        $nip05 = $nip05_lookup(str_replace('.at.', '@', $user));
         break;
         
     case 'nostr':
         if (str_contains($handle, '@')) {
-            $nip05 = NIP05::lookup($handle, $discovery_relays, $http, function() {
-                header('HTTP/1.1 404 Not found', true);
-                return 'Not found';
-            });
+            $nip05 = $nip05_lookup($handle);
         } elseif (str_starts_with($handle, 'npub1')) {
             $nip05 = new NIP05(new nostriphant\NIP19\Bech32($handle), $discovery_relays);
             break;
