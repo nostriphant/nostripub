@@ -47,8 +47,7 @@ switch ($scheme) {
                 return 'Not found';
             });
         } elseif (str_starts_with($handle, 'npub1')) {
-            $bech32 = new nostriphant\NIP19\Bech32($handle);
-            $nip05 = new NIP05($bech32(), $discovery_relays);
+            $nip05 = new NIP05(new nostriphant\NIP19\Bech32($handle), $discovery_relays);
             break;
         } else {
             header('HTTP/1.1 422 Unprocessable Content', true);
