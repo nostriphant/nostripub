@@ -1,27 +1,7 @@
 <?php
-
-function nip05_lookup(string $nostr_user, string $nostr_domain) : array {
-    error_log('Requesting https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
-    $curl = curl_init('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $body = curl_exec($curl);
-    $info = curl_getinfo($curl);
-    curl_close($curl);
-    
-    if ($info['http_code'] !== 200) {
-        error_log('Received not OK');
-        return [];
-    }
-
-    $json = json_decode($body, true);
-    if (isset($json['names'][$nostr_user]) === false) {
-        error_log($nostr_user . ' does not exists at ' . $nostr_domain);
-        return [];
-    }
-    return $json;
-}
-
 require_once dirname(__DIR__) . '/bootstrap.php';
+
+use nostriphant\nostripub\NIP05;
 
 $browser_hostname = $_SERVER["HTTP_HOST"];
 $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
@@ -53,7 +33,7 @@ switch ($scheme) {
 
 
         list($nostr_user, $nostr_domain) = explode('.at.', $user, 2);
-        $json = nip05_lookup($nostr_user, $nostr_domain);;
+        $json = NIP05::lookup($nostr_user, $nostr_domain);;
         if (empty($json)) {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
@@ -83,7 +63,7 @@ switch ($scheme) {
         }
         
         list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
-        $json = nip05_lookup($nostr_user, $nostr_domain);
+        $json = NIP05::lookup($nostr_user, $nostr_domain);
         if (empty($json)) {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
