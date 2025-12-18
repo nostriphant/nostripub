@@ -33,7 +33,7 @@ switch ($scheme) {
 
 
         list($nostr_user, $nostr_domain) = explode('.at.', $user, 2);
-        $nip05 = NIP05::lookup($nostr_user, $nostr_domain, function() {
+        $nip05 = NIP05::lookup($nostr_user, $nostr_domain, $discovery_relays, function() {
             header('HTTP/1.1 404 Not found', true);
             return 'Not found';
         });
@@ -42,7 +42,7 @@ switch ($scheme) {
     case 'nostr':
         if (str_contains($handle, '@')) {
             list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
-            $nip05 = NIP05::lookup($nostr_user, $nostr_domain, function() {
+            $nip05 = NIP05::lookup($nostr_user, $nostr_domain, $discovery_relays, function() {
                 header('HTTP/1.1 404 Not found', true);
                 return 'Not found';
             });
@@ -56,7 +56,7 @@ switch ($scheme) {
         break;
 }
     
-$metadata = $nip05($discovery_relays, function() {
+$metadata = $nip05(function() {
     header('HTTP/1.1 422 Unprocessable Content', true);
     return 'Unprocessable Content';
 });
