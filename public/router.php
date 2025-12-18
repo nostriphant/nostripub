@@ -33,21 +33,21 @@ switch ($scheme) {
 
 
         list($nostr_user, $nostr_domain) = explode('.at.', $user, 2);
-        $json = NIP05::lookup($nostr_user, $nostr_domain);;
-        if (empty($json)) {
+        $nip05 = NIP05::lookup($nostr_user, $nostr_domain);
+        if (empty($nip05->pubkey)) {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
         }
 
         try {
-            $bech32 = nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]);
+            $bech32 = nostriphant\NIP19\Bech32::npub($nip05->pubkey);
         } catch (Exception $e) {
             header('HTTP/1.1 422 Unprocessable Content', true);
             exit('Unprocessable Content');
         }
 
-        if (isset($json['relays'])) {
-            $discovery_relays = $json['relays'];
+        if (empty($nip05->relays) === false) {
+            $discovery_relays = $nip05->relays;
         }
         break;
         
@@ -63,21 +63,21 @@ switch ($scheme) {
         }
         
         list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
-        $json = NIP05::lookup($nostr_user, $nostr_domain);
-        if (empty($json)) {
+        $nip05 = NIP05::lookup($nostr_user, $nostr_domain);
+        if (empty($nip05->pubkey)) {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
         }
 
         try {
-            $bech32 = nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]);
+            $bech32 = nostriphant\NIP19\Bech32::npub($nip05->pubkey);
         } catch (Exception $e) {
             header('HTTP/1.1 422 Unprocessable Content', true);
             exit('Unprocessable Content');
         }
 
-        if (isset($json['relays'])) {
-            $discovery_relays = $json['relays'];
+        if (empty($nip05->relays) === false) {
+            $discovery_relays = $nip05->relays;
         }
         break;
 }
