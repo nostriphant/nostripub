@@ -33,11 +33,10 @@ switch ($scheme) {
 
 
         list($nostr_user, $nostr_domain) = explode('.at.', $user, 2);
-        $nip05 = NIP05::lookup($nostr_user, $nostr_domain);
-        if (empty($nip05->pubkey)) {
+        $nip05 = NIP05::lookup($nostr_user, $nostr_domain, function() {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
-        }
+        });
 
         try {
             $bech32 = nostriphant\NIP19\Bech32::npub($nip05->pubkey);
@@ -63,11 +62,10 @@ switch ($scheme) {
         }
         
         list($nostr_user, $nostr_domain) = explode('@', $handle, 2);
-        $nip05 = NIP05::lookup($nostr_user, $nostr_domain);
-        if (empty($nip05->pubkey)) {
+        $nip05 = NIP05::lookup($nostr_user, $nostr_domain, function() {
             header('HTTP/1.1 404 Not found', true);
             exit('Not found');
-        }
+        });
 
         try {
             $bech32 = nostriphant\NIP19\Bech32::npub($nip05->pubkey);
