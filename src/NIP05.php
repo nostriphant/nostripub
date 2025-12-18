@@ -4,7 +4,7 @@ namespace nostriphant\nostripub;
 
 final readonly class NIP05 {
     
-    public function __construct(public string $pubkey, public array $relays) {
+    public function __construct(private string $pubkey, private ?array $relays) {
         
     }
     
@@ -17,13 +17,22 @@ final readonly class NIP05 {
         curl_close($curl);
 
         if ($info['http_code'] !== 200) {
-            return $error();
+            exit($error());
         }
 
         $json = json_decode($body, true);
         if (isset($json['names'][$nostr_user]) === false) {
-            return $error();
+            exit($error());
         }
-        return new self($json['names'][$nostr_user], $json['relays'] ?? []);
+        return new self($json['names'][$nostr_user], $json['relays'] ?? null);
+    }
+    
+    public function __invoke(array $discovery_relays, callable $error): \nostriphant\NIP01\Event {
+        try {
+            $bech32 = \nostriphant\NIP19\Bech32::npub($this->pubkey);
+        } catch (Exception $e) {
+            exit($error());
+        }
+        return \nostriphant\nostripub\Metadata::discoverByNpub($bech32, $this->relays ?? $discovery_relays);
     }
 }
