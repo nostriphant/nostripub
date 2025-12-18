@@ -88,12 +88,13 @@ $entity = [
 ];
 switch ($bech32->type) {
     case 'npub':
+        $metadata = nostriphant\nostripub\Metadata::discoverByNpub($bech32, $discovery_relays);
+        
         $entity['links'] = [[
                 "rel" => "http://webfinger.net/rel/profile-page",
-                "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$bech32
+                "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$metadata->pubkey
         ]];
         
-        $metadata = nostriphant\nostripub\Metadata::discoverByNpub($bech32, $discovery_relays);
         if (\nostriphant\NIP01\Event::hasTag($metadata, "picture")) {
             $avatar_url = \nostriphant\NIP01\Event::extractTagValues($metadata, "picture")[0][0];
             $curl = curl_init($avatar_url);

@@ -23,7 +23,7 @@ describe('webfinger', function() {
             ->links->toBe([
                             [
                                     "rel" => "http://webfinger.net/rel/profile-page",
-                                    "href" =>  "http://127.0.0.1:8080/@npub1efz8l77esdtpw6l359sjvakm7azvyv6mkuxphjdk3vfzkgxkatrqlpf9s4"
+                                    "href" =>  "http://127.0.0.1:8080/@ca447ffbd98356176bf1a1612676dbf744c2335bb70c1bc9b68b122b20d6eac6"
                             ],
                             [
                                     "rel" => "http://webfinger.net/rel/avatar",
@@ -47,7 +47,7 @@ describe('webfinger', function() {
             ->links->toBe([
                             [
                                     "rel" => "http://webfinger.net/rel/profile-page",
-                                    "href" =>  "http://127.0.0.1:8080/@npub1efz8l77esdtpw6l359sjvakm7azvyv6mkuxphjdk3vfzkgxkatrqlpf9s4"
+                                    "href" =>  "http://127.0.0.1:8080/@ca447ffbd98356176bf1a1612676dbf744c2335bb70c1bc9b68b122b20d6eac6"
                             ],
                             [
                                     "rel" => "http://webfinger.net/rel/avatar",
@@ -63,7 +63,7 @@ describe('webfinger', function() {
             ->links->toBe([
                             [
                                     "rel" => "http://webfinger.net/rel/profile-page",
-                                    "href" =>  "http://127.0.0.1:8080/@npub16we82lw9jyxn3nqzafk4zsv7kt08f7csjut9q8t65aejvdde7ydsde8xln"
+                                    "href" =>  "http://127.0.0.1:8080/@d3b2757dc5910d38cc02ea6d51419eb2de74fb109716501d7aa7732635b9f11b"
                             ],
                             [
                                     "rel" => "http://webfinger.net/rel/avatar",
