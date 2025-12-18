@@ -8,19 +8,9 @@ final readonly class NIP05 {
         
     }
     
-    public static function lookup(string $nostr_user, string $nostr_domain, array $discovery_relays, callable $error) : self {
-        error_log('Requesting https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
-        $curl = curl_init('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $body = curl_exec($curl);
-        $info = curl_getinfo($curl);
-        curl_close($curl);
-
-        if ($info['http_code'] !== 200) {
-            exit($error());
-        }
-
-        $json = json_decode($body, true);
+    public static function lookup(string $nip05_identifier, array $discovery_relays, callable $http, callable $error) : self {
+        list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
+        $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $error);
         if (isset($json['names'][$nostr_user]) === false) {
             exit($error());
         }
