@@ -8,11 +8,6 @@ $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
 
 $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
 
-$error = function() {
-    header('HTTP/1.1 422 Unprocessable Content', true);
-    return 'Unprocessable Content';
-};
-
 if (isset($_GET['resource']) === false) {
     header('HTTP/1.1 400 Bad Request', true);
     exit('Bad Request');
@@ -61,4 +56,7 @@ $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $brow
 
     header('Content-Type: application/jrd+json', true);
     exit(json_encode($entity));
-}, $error);
+}, function() {
+    header('HTTP/1.1 422 Unprocessable Content', true);
+    return 'Unprocessable Content';
+});
