@@ -3,16 +3,15 @@ require_once dirname(__DIR__) . '/bootstrap.php';
 
 use nostriphant\nostripub\NIP05;
 
+if (isset($_GET['resource']) === false) {
+    header('HTTP/1.1 400 Bad Request', true);
+    exit('Bad Request');
+}
+
 $browser_hostname = $_SERVER["HTTP_HOST"];
 $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
 
 $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
-
-if (isset($_GET['resource']) === false) {
-    header('HTTP/1.1 400 Bad Request', true);
-    exit('Bad Request');
-    
-}
 $requested_resource = $_GET['resource'];
 
 $http = new \nostriphant\nostripub\HTTP(dirname(__DIR__) . '/cache');
@@ -34,8 +33,8 @@ $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $brow
         "aliases" => [],
         "properties"=> [],
         "links" => [[
-                "rel" => "http://webfinger.net/rel/profile-page",
-                "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$event->pubkey
+            "rel" => "http://webfinger.net/rel/profile-page",
+            "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$event->pubkey
         ]]
     ];
 
