@@ -12,6 +12,11 @@ $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay,[
     'relay.noswhere.com'
 ]);
 
+$error = function() {
+    header('HTTP/1.1 422 Unprocessable Content', true);
+    return 'Unprocessable Content';
+};
+
 if (isset($_GET['resource']) === false) {
     header('HTTP/1.1 400 Bad Request', true);
     exit('Bad Request');
@@ -46,43 +51,37 @@ switch ($scheme) {
             $nip05 = new NIP05(new nostriphant\NIP19\Bech32($handle), $discovery_relays);
             break;
         } else {
-            header('HTTP/1.1 422 Unprocessable Content', true);
-            exit('Unprocessable Content');
+            exit($error());
         }
         break;
 }
-    
-$metadata = $nip05(function() {
-    header('HTTP/1.1 422 Unprocessable Content', true);
-    return 'Unprocessable Content';
-});
 
-$entity = [
-    "subject" => $requested_resource,
-    "aliases" => [],
-    "properties"=> [],
-    "links" => []
-];
-
-$entity['links'] = [[
-        "rel" => "http://webfinger.net/rel/profile-page",
-        "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$metadata->pubkey
-]];
-
-if (\nostriphant\NIP01\Event::hasTag($metadata, "picture")) {
-    $avatar_url = \nostriphant\NIP01\Event::extractTagValues($metadata, "picture")[0][0];
-    $curl = curl_init($avatar_url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_exec($curl);
-    $info = curl_getinfo($curl);
-    curl_close($curl);
-
-    $entity['links'][] = [
-        "rel" => "http://webfinger.net/rel/avatar",
-        "type" => $info['content_type'],
-        "href" => $info['url']
+$nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $browser_scheme, $browser_hostname) {
+    $entity = [
+        "subject" => $requested_resource,
+        "aliases" => [],
+        "properties"=> [],
+        "links" => [[
+                "rel" => "http://webfinger.net/rel/profile-page",
+                "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$event->pubkey
+        ]]
     ];
-}
 
-header('Content-Type: application/jrd+json', true);
-print json_encode($entity);
+    if (\nostriphant\NIP01\Event::hasTag($event, "picture")) {
+        $avatar_url = \nostriphant\NIP01\Event::extractTagValues($event, "picture")[0][0];
+        $curl = curl_init($avatar_url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($curl);
+        $info = curl_getinfo($curl);
+        curl_close($curl);
+
+        $entity['links'][] = [
+            "rel" => "http://webfinger.net/rel/avatar",
+            "type" => $info['content_type'],
+            "href" => $info['url']
+        ];
+    }
+
+    header('Content-Type: application/jrd+json', true);
+    exit(json_encode($entity));
+}, $error);

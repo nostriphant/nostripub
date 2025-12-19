@@ -2,9 +2,13 @@
 
 namespace nostriphant\nostripub;
 
+use nostriphant\NIP01\Message;
+use nostriphant\Client\Client;
+use nostriphant\NIP19\Bech32;
+
 final readonly class NIP05 {
     
-    public function __construct(private \nostriphant\NIP19\Bech32 $pubkey, private array $relays) {
+    public function __construct(public Bech32 $pubkey, public array $relays) {
         
     }
     
@@ -15,11 +19,30 @@ final readonly class NIP05 {
             if (isset($json['names'][$nostr_user]) === false) {
                 exit($error());
             }
-            return new self(\nostriphant\NIP19\Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
+            return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
         };
     }
     
-    public function __invoke(callable $error): \nostriphant\NIP01\Event {
-        return \nostriphant\nostripub\Metadata::discoverByNpub($this->pubkey, $this->relays);
+    public function __invoke(callable $transform, callable $error): void {
+        foreach ($this->relays as $discovery_relay) {
+            $client = Client::connectToUrl($discovery_relay);
+            error_log('Connecting to ' . $discovery_relay);
+
+            $subscription_id = uniqid();
+
+            $listen = $client(fn(\nostriphant\NIP01\Transmission $send) => $send(Message::req($subscription_id, ["kinds" => [0], "authors" => [($this->pubkey)()]])));
+
+            $listen(function(Message $message, callable $stop) use ($transform, $subscription_id) {
+                if ($message->payload[0] !== $subscription_id) {
+                    return;
+                } elseif ($message->type === 'EOSE') {
+                    $stop();
+                    return;
+                }
+                $stop();
+                $transform(new \nostriphant\NIP01\Event(...$message->payload[1]));
+            });
+        }
+        $error();
     }
 }
