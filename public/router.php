@@ -20,37 +20,18 @@ if (isset($_GET['resource']) === false) {
 }
 $requested_resource = $_GET['resource'];
 
-list($scheme, $handle) = explode(':', $requested_resource, 2);
-
 $http = new \nostriphant\nostripub\HTTP(dirname(__DIR__) . '/cache');
 
-$nip05_lookup = NIP05::lookup($discovery_relays, $http, function() {
-    header('HTTP/1.1 404 Not found', true);
-    return 'Not found';
-});
+$webfinger = new \nostriphant\nostripub\WebfingerResource($browser_hostname, NIP05::lookup($discovery_relays, $http, function(string $code) {
+    $message = match($code) {
+        '422' => 'Unprocessable Content',
+        '404' => 'Not found'
+    };
+    header('HTTP/1.1 ' . $code . ' ' . $message, true);
+    return $message;
+}));
 
-switch ($scheme) {
-    case 'acct':
-        list($user, $domain) = explode('@', $handle, 2);
-        if ($domain !== $browser_hostname) {
-            header('HTTP/1.1 302 Found', true);
-            header('Location: https://' . $domain . '/.well-known/webfinger?resource=' . urlencode($requested_resource));
-            exit('Found');
-        }
-        $nip05 = $nip05_lookup(str_replace('.at.', '@', $user));
-        break;
-        
-    case 'nostr':
-        if (str_contains($handle, '@')) {
-            $nip05 = $nip05_lookup($handle);
-        } elseif (str_starts_with($handle, 'npub1')) {
-            $nip05 = new NIP05(new nostriphant\NIP19\Bech32($handle), $discovery_relays);
-            break;
-        } else {
-            exit($error());
-        }
-        break;
-}
+$nip05 = $webfinger($requested_resource);
 
 $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $browser_scheme, $browser_hostname) {
     $entity = [

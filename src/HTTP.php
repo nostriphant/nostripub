@@ -12,7 +12,7 @@ final readonly class HTTP {
         if (file_exists($cache_file . '.json')) {
             $body = file_get_contents($cache_file . '.json');
         } elseif (file_exists($cache_file . '.error')) {
-            exit($error());
+            exit($error('404'));
 
         } else {
             error_log('Requesting ' . $url);
@@ -24,7 +24,7 @@ final readonly class HTTP {
 
             if ($info['http_code'] !== 200) {
                 touch($cache_file . '.error');
-                exit($error());
+                exit($error('404'));
             }
 
             file_put_contents($cache_file . '.json', $body);

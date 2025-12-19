@@ -14,12 +14,18 @@ final readonly class NIP05 {
     
     public static function lookup(array $discovery_relays, callable $http, callable $error) : callable {
         return function(string $nip05_identifier) use ($discovery_relays, $http, $error) : self {
-            list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
-            $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $error);
-            if (isset($json['names'][$nostr_user]) === false) {
-                exit($error());
+            if (str_contains($nip05_identifier, '@')) {
+                list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
+                $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $error);
+                if (isset($json['names'][$nostr_user]) === false) {
+                    exit($error('404'));
+                }
+                return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
+            } elseif (str_starts_with($nip05_identifier, 'npub1')) {
+                return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays);
             }
-            return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
+            
+            exit($error('422'));
         };
     }
     
