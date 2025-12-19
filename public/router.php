@@ -5,12 +5,8 @@ use nostriphant\nostripub\NIP05;
 
 $browser_hostname = $_SERVER["HTTP_HOST"];
 $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
-$discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay,[
-    'indexer.coracle.social',
-    'relay.nostr.band',
-    'relay.mostr.pub',
-    'relay.noswhere.com'
-]);
+
+$discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
 
 $error = function() {
     header('HTTP/1.1 422 Unprocessable Content', true);

@@ -13,7 +13,12 @@ abstract class AcceptanceCase extends BaseTestCase
     #[\Override]
     public static function setUpBeforeClass(): void {
         $cmd = [PHP_BINARY, '-S', '127.0.0.1:8080', '-d', 'variables_order=EGPCS', './public/router.php'];
-        $env = [];
+        $env = [
+            'DISCOVERY_RELAY0' => 'indexer.coracle.social',
+            'DISCOVERY_RELAY1' => 'relay.nostr.band',
+            'DISCOVERY_RELAY2' => 'relay.mostr.pub',
+            'DISCOVERY_RELAY3' => 'relay.noswhere.com'
+        ];
         self::$process = new Process('api', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
     }
  
