@@ -12,7 +12,7 @@ abstract class AcceptanceCase extends BaseTestCase
     
     #[\Override]
     public static function setUpBeforeClass(): void {
-        $cmd = [PHP_BINARY, '-S', '127.0.0.1:8080', '-d', 'variables_order=EGPCS', './public/router.php'];
+        $cmd = [PHP_BINARY, '-S', '127.0.0.1:8080', '-d', 'variables_order=EGPCS', './router.php'];
         $env = [
             'DISCOVERY_RELAY0' => 'indexer.coracle.social',
             'DISCOVERY_RELAY1' => 'relay.nostr.band',

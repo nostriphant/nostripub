@@ -1,5 +1,6 @@
 <?php
-require_once dirname(__DIR__) . '/bootstrap.php';
+
+require_once dirname(dirname(__DIR__)) . '/bootstrap.php';
 
 use nostriphant\nostripub\NIP05;
 
@@ -14,7 +15,7 @@ $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
 $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
 $requested_resource = $_GET['resource'];
 
-$http = new \nostriphant\nostripub\HTTP(dirname(__DIR__) . '/cache');
+$http = new \nostriphant\nostripub\HTTP(CACHE_DIR);
 
 $webfinger = new \nostriphant\nostripub\WebfingerResource($browser_hostname, NIP05::lookup($discovery_relays, $http, function(string $code) {
     $message = match($code) {
