@@ -1,7 +1,7 @@
 <?php
 
-$urls = [
-    '/.well-known/webfinger' => '/.well-known/webfinger.php'
-];
+require_once __DIR__ . '/bootstrap.php';
+    
+$router = require __DIR__ . '/routes.php';
 
-require __DIR__ . '/public/' . $urls[$_SERVER['PHP_SELF']];
+$router($_SERVER['PHP_SELF']);

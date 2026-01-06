@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname(dirname(__DIR__)) . '/bootstrap.php';
-
 use nostriphant\nostripub\NIP05;
 
 if (isset($_GET['resource']) === false) {
