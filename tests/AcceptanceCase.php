@@ -8,18 +8,8 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 abstract class AcceptanceCase extends BaseTestCase
 {
     
-    private static Process $process;
-    
-    #[\Override]
-    public static function setUpBeforeClass(): void {
-        $cmd = [PHP_BINARY, '-S', '127.0.0.1:8080', '-d', 'variables_order=EGPCS', './router.php'];
-        $env = [
-            'DISCOVERY_RELAY0' => 'relay.mostr.pub',
-            'DISCOVERY_RELAY1' => 'relay.noswhere.com',
-            'DISCOVERY_RELAY2' => 'purplepag.es'
-        ];
-        self::$process = new Process('api', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
-    }
+    public static Process $process;
+   
  
     public function get(string $path) {
         $curl = curl_init('http://127.0.0.1:8080' . $path);
@@ -38,9 +28,5 @@ abstract class AcceptanceCase extends BaseTestCase
         });
     }
     
-    
-    #[\Override]
-    public static function tearDownAfterClass(): void {
-        call_user_func(self::$process);
-    }
+   
 }
