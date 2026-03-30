@@ -44,6 +44,10 @@ final readonly class NIP05 {
                 } elseif ($message->type === 'EOSE') {
                     $stop();
                     return;
+                } elseif ($message->type === 'CLOSED') {
+                    error_log('Subscription closed: ' . $message->payload[1]);
+                    $stop();
+                    return;
                 }
                 $stop();
                 $transform(new \nostriphant\NIP01\Event(...$message->payload[1]));

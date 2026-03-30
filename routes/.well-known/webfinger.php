@@ -36,10 +36,10 @@ $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $brow
             "href" => $browser_scheme.'://'.$browser_hostname.'/@'.$event->pubkey
         ]]
     ];
-
-    if (\nostriphant\NIP01\Event::hasTag($event, "picture")) {
-        $avatar_url = \nostriphant\NIP01\Event::extractTagValues($event, "picture")[0][0];
-        $curl = curl_init($avatar_url);
+    
+    $profile = json_decode($event->content);
+    if ($profile->picture) {
+        $curl = curl_init($profile->picture);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_exec($curl);
         $info = curl_getinfo($curl);

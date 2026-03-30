@@ -6,9 +6,10 @@ $process;
 beforeAll(function() use (&$process) {
         $cmd = [PHP_BINARY, '-S', '127.0.0.1:8080', '-d', 'variables_order=EGPCS', './router.php'];
         $env = [
-            'DISCOVERY_RELAY0' => 'relay.mostr.pub',
-            'DISCOVERY_RELAY1' => 'relay.noswhere.com',
-            'DISCOVERY_RELAY2' => 'purplepag.es'
+            'DISCOVERY_RELAY0' => 'indexer.openresist.com',
+            'DISCOVERY_RELAY1' => 'relay.mostr.pub',
+            'DISCOVERY_RELAY2' => 'relay.noswhere.com',
+            'DISCOVERY_RELAY3' => 'purplepag.es',
         ];
         
         
