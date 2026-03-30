@@ -38,7 +38,7 @@ $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $brow
     ];
     
     $profile = json_decode($event->content);
-    if ($profile->picture) {
+    if ($profile && isset($profile->picture) && $profile->picture) {
         $curl = curl_init($profile->picture);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_exec($curl);
