@@ -31,8 +31,12 @@ final readonly class NIP05 {
     
     public function __invoke(callable $transform, callable $error): void {
         foreach ($this->relays as $discovery_relay) {
-            $client = Client::connectToUrl($discovery_relay);
-            error_log('Connecting to ' . $discovery_relay);
+            try {
+                error_log('Connecting to ' . $discovery_relay);
+                $client = Client::connectToUrl($discovery_relay);
+            } catch (Amp\Websocket\Client\WebsocketConnectException $e) {
+                $error('500');
+            }
 
             $subscription_id = uniqid();
 
