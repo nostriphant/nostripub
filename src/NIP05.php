@@ -18,14 +18,14 @@ final readonly class NIP05 {
                 list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
                 $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $error);
                 if (isset($json['names'][$nostr_user]) === false) {
-                    exit($error('404'));
+                    $error(HTTPStatus::_404);
                 }
                 return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
             } elseif (str_starts_with($nip05_identifier, 'npub1')) {
                 return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays);
             }
             
-            exit($error('422'));
+            $error(HTTPStatus::_422);
         };
     }
     
@@ -35,7 +35,7 @@ final readonly class NIP05 {
                 error_log('Connecting to ' . $discovery_relay);
                 $client = Client::connectToUrl($discovery_relay);
             } catch (Amp\Websocket\Client\WebsocketConnectException $e) {
-                $error('500');
+                $error(HTTPStatus::_500);
             }
 
             $subscription_id = uniqid();
@@ -57,6 +57,6 @@ final readonly class NIP05 {
                 $transform(new \nostriphant\NIP01\Event(...$message->payload[1]));
             });
         }
-        $error();
+        $error(HTTPStatus::_422);
     }
 }

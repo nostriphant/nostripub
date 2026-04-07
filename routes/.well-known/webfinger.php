@@ -4,7 +4,7 @@ use nostriphant\nostripub\NIP05;
 
 return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
-    public function __invoke() {
+    public function __invoke(callable $respond) {
         if (isset($_GET['resource']) === false) {
             header('HTTP/1.1 400 Bad Request', true);
             exit('Bad Request');
@@ -18,18 +18,11 @@ return new class implements nostriphant\nostripub\Endpoint {
 
         $http = new \nostriphant\nostripub\HTTP(CACHE_DIR);
 
-        $webfinger = new \nostriphant\nostripub\WebfingerResource($browser_hostname, NIP05::lookup($discovery_relays, $http, function(string $code) {
-            $message = match($code) {
-                '422' => 'Unprocessable Content',
-                '404' => 'Not found'
-            };
-            header('HTTP/1.1 ' . $code . ' ' . $message, true);
-            return $message;
-        }));
+        $webfinger = new \nostriphant\nostripub\WebfingerResource($browser_hostname, NIP05::lookup($discovery_relays, $http, $respond));
 
         $nip05 = $webfinger($requested_resource);
 
-        $nip05(function(\nostriphant\NIP01\Event $event) use ($requested_resource, $browser_scheme, $browser_hostname) {
+        $nip05(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource, $browser_scheme, $browser_hostname) {
             $entity = [
                 "subject" => $requested_resource,
                 "aliases" => [],
@@ -55,11 +48,9 @@ return new class implements nostriphant\nostripub\Endpoint {
                 ];
             }
 
-            header('Content-Type: application/jrd+json', true);
-            exit(json_encode($entity));
+            $respond(headers:['Content-Type: application/jrd+json'], body:json_encode($entity));
         }, function() {
-            header('HTTP/1.1 422 Unprocessable Content', true);
-            return 'Unprocessable Content';
+            $respond(status: \nostriphant\nostripub\HTTPStatus::_422);
         });
 
     }
