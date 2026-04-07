@@ -14,9 +14,7 @@ final readonly class WebfingerResource {
         if ($scheme === 'acct') {
             list($user, $domain) = explode('@', $handle, 2);
             if ($domain !== $this->browser_hostname) {
-                header('HTTP/1.1 302 Found', true);
-                header('Location: https://' . $domain . '/.well-known/webfinger?resource=acct:' . urlencode($handle));
-                exit('Found');
+                $respond(HTTPStatus::_302, ['Location: https://' . $domain . '/.well-known/webfinger?resource=acct:' . urlencode($handle)]);
             }
             $handle = str_replace('.at.', '@', $user);
         }
