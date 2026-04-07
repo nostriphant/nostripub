@@ -18,6 +18,10 @@ describe('nostr.json', function() {
     it('responds with a 200 status code')
             ->get('/.well-known/nostr.json')
             ->status->toBe('200');
+    
+    it('responds with a 404 status code for a non-existing name')
+            ->get('/.well-known/nostr.json?name=non-existing')
+            ->status->toBe('404');
 });
 
 afterAll(function() use (&$process)  {
