@@ -9,24 +9,24 @@ use nostriphant\NIP19\Bech32;
 final readonly class NIP05 {
     
     
-    public function __construct(public Bech32 $pubkey, public array $relays, private Respond $error) {
+    public function __construct(public Bech32 $pubkey, public array $relays, private Respond $respond) {
         
     }
     
-    public static function lookup(array $discovery_relays, callable $http, Respond $error) : callable {
-        return function(string $nip05_identifier) use ($discovery_relays, $http, $error) : self {
+    public static function lookup(array $discovery_relays, callable $http, Respond $respond) : callable {
+        return function(string $nip05_identifier) use ($discovery_relays, $http, $respond) : self {
             if (str_contains($nip05_identifier, '@')) {
                 list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
-                $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $error);
+                $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $respond);
                 if (isset($json['names'][$nostr_user]) === false) {
-                    $error(HTTPStatus::_404);
+                    $respond(HTTPStatus::_404);
                 }
-                return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays, $error);
+                return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays, $respond);
             } elseif (str_starts_with($nip05_identifier, 'npub1')) {
-                return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays, $error);
+                return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays, $respond);
             }
             
-            $error(HTTPStatus::_422);
+            $respond(HTTPStatus::_422);
         };
     }
     
@@ -36,7 +36,7 @@ final readonly class NIP05 {
                 error_log('Connecting to ' . $discovery_relay);
                 $client = Client::connectToUrl($discovery_relay);
             } catch (Amp\Websocket\Client\WebsocketConnectException $e) {
-                ($this->error)(HTTPStatus::_500);
+                ($this->respond)(HTTPStatus::_500);
             }
 
             $subscription_id = uniqid();
@@ -58,6 +58,6 @@ final readonly class NIP05 {
                 $transform(new \nostriphant\NIP01\Event(...$message->payload[1]));
             });
         }
-        ($this->error)(HTTPStatus::_422);
+        ($this->respond)(HTTPStatus::_422);
     }
 }
