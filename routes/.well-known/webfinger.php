@@ -6,8 +6,7 @@ return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
     public function __invoke(callable $respond) {
         if (isset($_GET['resource']) === false) {
-            header('HTTP/1.1 400 Bad Request', true);
-            exit('Bad Request');
+            $respond(\nostriphant\nostripub\HTTPStatus::_400);
         }
 
         $browser_hostname = $_SERVER["HTTP_HOST"];
