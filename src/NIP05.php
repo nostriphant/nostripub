@@ -8,11 +8,12 @@ use nostriphant\NIP19\Bech32;
 
 final readonly class NIP05 {
     
-    public function __construct(public Bech32 $pubkey, public array $relays) {
+    
+    public function __construct(public Bech32 $pubkey, public array $relays, private Respond $error) {
         
     }
     
-    public static function lookup(array $discovery_relays, callable $http, callable $error) : callable {
+    public static function lookup(array $discovery_relays, callable $http, Respond $error) : callable {
         return function(string $nip05_identifier) use ($discovery_relays, $http, $error) : self {
             if (str_contains($nip05_identifier, '@')) {
                 list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
@@ -20,22 +21,22 @@ final readonly class NIP05 {
                 if (isset($json['names'][$nostr_user]) === false) {
                     $error(HTTPStatus::_404);
                 }
-                return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays);
+                return new self(Bech32::npub($json['names'][$nostr_user]), $json['relays'] ?? $discovery_relays, $error);
             } elseif (str_starts_with($nip05_identifier, 'npub1')) {
-                return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays);
+                return new self(new \nostriphant\NIP19\Bech32($nip05_identifier), $discovery_relays, $error);
             }
             
             $error(HTTPStatus::_422);
         };
     }
     
-    public function __invoke(callable $transform, callable $error): void {
+    public function __invoke(callable $transform): void {
         foreach ($this->relays as $discovery_relay) {
             try {
                 error_log('Connecting to ' . $discovery_relay);
                 $client = Client::connectToUrl($discovery_relay);
             } catch (Amp\Websocket\Client\WebsocketConnectException $e) {
-                $error(HTTPStatus::_500);
+                ($this->error)(HTTPStatus::_500);
             }
 
             $subscription_id = uniqid();
@@ -57,6 +58,6 @@ final readonly class NIP05 {
                 $transform(new \nostriphant\NIP01\Event(...$message->payload[1]));
             });
         }
-        $error(HTTPStatus::_422);
+        ($this->error)(HTTPStatus::_422);
     }
 }

@@ -4,7 +4,7 @@ use nostriphant\nostripub\NIP05;
 
 return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
-    public function __invoke(callable $respond) {
+    public function __invoke(nostriphant\nostripub\Respond $respond) {
         if (isset($_GET['resource']) === false) {
             $respond(\nostriphant\nostripub\HTTPStatus::_400);
         }
@@ -48,8 +48,6 @@ return new class implements nostriphant\nostripub\Endpoint {
             }
 
             $respond(headers:['Content-Type: application/jrd+json'], body:json_encode($entity));
-        }, function() {
-            $respond(status: \nostriphant\nostripub\HTTPStatus::_422);
         });
 
     }

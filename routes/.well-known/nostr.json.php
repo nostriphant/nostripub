@@ -3,7 +3,7 @@
 
 return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
-    public function __invoke(callable $respond) {
+    public function __invoke(nostriphant\nostripub\Respond $respond) {
         $names = [];
         $requested_name = $_GET['name'] ?? null;
 
