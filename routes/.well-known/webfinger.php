@@ -19,9 +19,7 @@ return new class implements nostriphant\nostripub\Endpoint {
 
         $webfinger = new \nostriphant\nostripub\WebfingerResource($browser_hostname, NIP05::lookup($discovery_relays, $http, $respond));
 
-        $nip05 = $webfinger($requested_resource);
-
-        $nip05(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource, $browser_scheme, $browser_hostname) {
+        $webfinger($requested_resource, function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource, $browser_scheme, $browser_hostname) {
             $entity = [
                 "subject" => $requested_resource,
                 "aliases" => [],

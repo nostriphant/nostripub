@@ -9,7 +9,7 @@ final readonly class WebfingerResource {
         
     }
     
-    public function __invoke(string $requested_resource): NIP05 {
+    public function __invoke(string $requested_resource, callable $transform): NIP05 {
         list($scheme, $handle) = explode(':', $requested_resource, 2);
         if ($scheme === 'acct') {
             list($user, $domain) = explode('@', $handle, 2);
@@ -21,7 +21,7 @@ final readonly class WebfingerResource {
             $handle = str_replace('.at.', '@', $user);
         }
         
-        return ($this->nip05_lookup)($handle);
+        return ($this->nip05_lookup)($handle)($transform);
     }
     
 }
