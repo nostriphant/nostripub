@@ -13,8 +13,8 @@ final readonly class NIP05 {
         
     }
     
-    public static function lookup(array $discovery_relays, callable $http, Respond $respond) : callable {
-        return function(string $nip05_identifier) use ($discovery_relays, $http, $respond) : self {
+    public static function lookup(array $discovery_relays, HTTP $http) : callable {
+        return function(string $nip05_identifier, Respond $respond) use ($discovery_relays, $http) : self {
             if (str_contains($nip05_identifier, '@')) {
                 list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);
                 $json = $http('https://' . $nostr_domain . '/.well-known/nostr.json?name=' . $nostr_user, $respond);

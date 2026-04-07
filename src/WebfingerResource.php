@@ -19,7 +19,7 @@ final readonly class WebfingerResource {
             $handle = str_replace('.at.', '@', $user);
         }
         
-        ($this->nip05_lookup)($handle)(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource) {
+        ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource) {
             $entity = [
                 "subject" => $requested_resource,
                 "aliases" => [],
