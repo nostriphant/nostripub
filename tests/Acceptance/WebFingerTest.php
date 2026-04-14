@@ -22,25 +22,15 @@ describe('webfinger', function() {
             ->status->toBe('400');
     
     it('responds with a 302 status code for a resource at a different domain')
-            ->get('/.well-known/webfinger?resource=acct%3Arik%40rikmeijer.nl')
+            ->get('/.well-known/webfinger?resource=acct%3Asocial%40rikmeijer.nl')
             ->status->toBe('302');
     
-    
+    $keypair = new nostriphant\nostripub\Keypair(CACHE_DIR . '/keys');
     it('responds with a 200 status code for a resource at a different wrapped domain')
-            ->get('/.well-known/webfinger?resource=acct%3Arik.at.rikmeijer.nl%40127.0.0.1:8080')
+            ->get('/.well-known/webfinger?resource=acct%3Asocial.at.rikmeijer.nl%40127.0.0.1:8080')
             ->status->toBe('200')
-            ->subject->toBe('acct:rik.at.rikmeijer.nl@127.0.0.1:8080')
-            ->links->toBe([
-                            [
-                                    "rel" => "http://webfinger.net/rel/profile-page",
-                                    "href" =>  "http://127.0.0.1:8080/@ca447ffbd98356176bf1a1612676dbf744c2335bb70c1bc9b68b122b20d6eac6"
-                            ],
-                            [
-                                    "rel" => "http://webfinger.net/rel/avatar",
-                                    "type"=> "image/png",
-                                    "href"=> "https://gravatar.com/userimage/128219001/7b07009f6c5aff6f13b1050c1b354208.jpeg?size=256"
-                            ]
-                    ]);
+            ->subject->toBe('acct:social.at.rikmeijer.nl@127.0.0.1:8080')
+            ->aliases->toContain("http://127.0.0.1:8080/@" . new Bech32($keypair('social@rikmeijer.nl')['public_key'])());
     
     it('responds with a 404 status code for a non-existing (or unretrievable) NIP-05 identifier, because wrong domain')
             ->get('/.well-known/webfinger?resource=nostr%3Abob%40example.tlb')

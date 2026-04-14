@@ -7,7 +7,7 @@ final readonly class HTTP {
         
     }
     
-    public function __invoke(string $url, callable $error) : array {
+    public function __invoke(string $url, Respond $error) : array {
         $cache_file = $this->cache . '/'. md5($url);
         if (file_exists($cache_file . '.json')) {
             $body = file_get_contents($cache_file . '.json');
