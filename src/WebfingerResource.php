@@ -25,7 +25,7 @@ final readonly class WebfingerResource {
             $activity_pub_account = $http('https://' . $domain . '/.well-known/webfinger?resource=acct:' . urlencode($handle), $respond);
             
             $keys = $keys($handle);
-            $pubkey = new \nostriphant\NIP19\Bech32($keys['public_key'])();
+            $pubkey = $keys['public_key'];
             
             $activity_pub_account['subject'] = $requested_resource;
             $activity_pub_account['aliases'][] = $this->browser_scheme.'://'.$this->browser_hostname.'/@'.$pubkey;

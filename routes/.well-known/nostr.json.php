@@ -14,7 +14,7 @@ return new class implements nostriphant\nostripub\Endpoint {
             if (isset($data['public_key'])) {
                 preg_match('/@(.+)$/', basename($file, '.json'), $matches);
                 $identifier = hex2bin(basename($file, '.json'));
-                $names[$identifier] = substr($data['public_key'], 5);
+                $names[$identifier] = $data['public_key'];
             }
         }
         

@@ -22,8 +22,8 @@ describe('KeyRepository', function() {
         $keys = $repo('test@example.com');
         expect($keys)->toBeArray();
         expect(array_keys($keys))->toEqual(['private_key', 'public_key']);
-        expect($keys['private_key'])->toStartWith('nsec1');
-        expect($keys['public_key'])->toStartWith('npub1');
+        expect($keys['private_key'])->toMatch('/^[a-f0-9]{64}$/');
+        expect($keys['public_key'])->toMatch('/^[a-f0-9]{64}$/');
     });
     
     it('returns the same keypair for the same identifier', function() {
@@ -41,11 +41,11 @@ describe('KeyRepository', function() {
         expect($keys1['public_key'])->not->toBe($keys2['public_key']);
     });
     
-    it('stores valid bech32 encoded keys', function() {
+    it('stores valid hexadecimal keys', function() {
         $repo = $this->repo;
         $keys = $repo('test@example.com');
-        expect($keys['private_key'])->toMatch('/^nsec1[023456789acdefghjklmnpqrstuvwxyz]{58}$/');
-        expect($keys['public_key'])->toMatch('/^npub1[023456789acdefghjklmnpqrstuvwxyz]{58}$/');
+        expect($keys['private_key'])->toMatch('/^[a-f0-9]{64}$/');
+        expect($keys['public_key'])->toMatch('/^[a-f0-9]{64}$/');
     });
     
     it('creates file for stored keypair', function() {
@@ -72,7 +72,7 @@ describe('nostr.json names mapping', function() {
         
         $stored = json_decode(file_get_contents($files[0]), true);
         expect($stored)->toEqual($keys);
-        expect($stored['public_key'])->toStartWith('npub1');
+        expect($stored['public_key'])->toMatch('/^[a-f0-9]{64}$/');
     });
     
     it('serves public keys for nostr.json endpoint', function() {
@@ -80,7 +80,7 @@ describe('nostr.json names mapping', function() {
         $identifier = 'testuser@example.com';
         $keys = $repo($identifier);
         
-        expect($keys['public_key'])->toStartWith('npub1');
-        expect($keys['private_key'])->toStartWith('nsec1');
+        expect($keys['public_key'])->toMatch('/^[a-f0-9]{64}$/');
+        expect($keys['private_key'])->toMatch('/^[a-f0-9]{64}$/');
     });
 });

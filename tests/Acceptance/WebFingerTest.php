@@ -30,7 +30,7 @@ describe('webfinger', function() {
             ->get('/.well-known/webfinger?resource=acct%3Asocial.at.rikmeijer.nl%40127.0.0.1:8080')
             ->status->toBe('200')
             ->subject->toBe('acct:social.at.rikmeijer.nl@127.0.0.1:8080')
-            ->aliases->toContain("http://127.0.0.1:8080/@" . new Bech32($keys('social@rikmeijer.nl')['public_key'])());
+            ->aliases->toContain("http://127.0.0.1:8080/@" . $keys('social@rikmeijer.nl')['public_key']);
     
     it('responds with a 404 status code for a non-existing (or unretrievable) NIP-05 identifier, because wrong domain')
             ->get('/.well-known/webfinger?resource=nostr%3Abob%40example.tlb')

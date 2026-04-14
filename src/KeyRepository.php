@@ -2,7 +2,6 @@
 
 namespace nostriphant\nostripub;
 
-use nostriphant\NIP19\Bech32;
 use nostriphant\NIP01\Key;
 
 final readonly class KeyRepository {
@@ -19,8 +18,8 @@ final readonly class KeyRepository {
             $public_key_hex = Key::public()($private_key_hex);
 
             file_put_contents($path, json_encode([
-                'private_key' => (string) Bech32::nsec($private_key_hex),
-                'public_key' => (string) Bech32::npub($public_key_hex),
+                'private_key' => $private_key_hex,
+                'public_key' => $public_key_hex,
             ]));
         }
 
