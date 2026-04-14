@@ -9,7 +9,7 @@ final readonly class WebfingerResource {
         
     }
     
-    public function __invoke(string $requested_resource, HTTP $http, Respond $respond, Keypair $keypair): void {
+    public function __invoke(string $requested_resource, HTTP $http, Respond $respond, KeyRepository $keys): void {
         list($scheme, $handle) = explode(':', $requested_resource, 2);
         $is_activitypub_user = false;
         
@@ -24,7 +24,7 @@ final readonly class WebfingerResource {
             list($user, $domain) = explode('@', $handle, 2);
             $activity_pub_account = $http('https://' . $domain . '/.well-known/webfinger?resource=acct:' . urlencode($handle), $respond);
             
-            $keys = $keypair($handle);
+            $keys = $keys($handle);
             $pubkey = new \nostriphant\NIP19\Bech32($keys['public_key'])();
             
             $activity_pub_account['subject'] = $requested_resource;
@@ -32,7 +32,7 @@ final readonly class WebfingerResource {
             
             $respond(headers:['Content-Type: application/jrd+json'], body:json_encode($activity_pub_account));
         } elseif ($scheme === 'nostr') {
-            ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource, $handle, $keypair) {
+            ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $requested_resource, $handle, $keys) {
                 $pubkey = $event->pubkey;
 
                 $entity = [

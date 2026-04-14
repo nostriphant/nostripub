@@ -5,7 +5,7 @@ namespace nostriphant\nostripub;
 use nostriphant\NIP19\Bech32;
 use nostriphant\NIP01\Key;
 
-final readonly class Keypair {
+final readonly class KeyRepository {
 
     public function __construct(private string $directory) {
         

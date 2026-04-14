@@ -1,11 +1,11 @@
 <?php
 
-use nostriphant\nostripub\Keypair;
+use nostriphant\nostripub\KeyRepository;
 
 return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
     public function __invoke(nostriphant\nostripub\Respond $respond) {
-        $keypair = new Keypair(CACHE_DIR . '/keys');
+        $keys = new KeyRepository(CACHE_DIR . '/keys');
         $names = [];
         
         $key_files = glob(CACHE_DIR . '/keys/*.json');
