@@ -19,10 +19,20 @@ return new class implements nostriphant\nostripub\Endpoint {
         is_dir($keys_Directory) || mkdir($keys_Directory);
         $keys = new KeyRepository($keys_Directory);
                 
+        $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
+        $browser_hostname = $_SERVER["HTTP_HOST"];
+        $baseurl = $browser_scheme . '://' . $browser_hostname;
+        $webfinger = new \nostriphant\nostripub\WebfingerResource(function(string $scheme) use ($baseurl, $keys, $nip05_lookup, $respond) {
+            if ($scheme === 'acct') {
+                return new \nostriphant\nostripub\WebfingerResource\Acct($baseurl, $keys);
+            } elseif ($scheme === 'nostr') {
+                return new \nostriphant\nostripub\WebfingerResource\Nostr($baseurl, $nip05_lookup);
+            } else {
+                $respond(\nostriphant\nostripub\HTTPStatus::_400);
+            }
+        });
 
-        $webfinger = new \nostriphant\nostripub\WebfingerResource('http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : ''), $_SERVER["HTTP_HOST"], $nip05_lookup);
-
-        $webfinger($_GET['resource'], $http, $respond, $keys);
+        $webfinger($_GET['resource'], $http, $respond);
 
     }
 };

@@ -6,20 +6,20 @@ use nostriphant\nostripub\HTTP;
 use nostriphant\nostripub\Respond;
 
 readonly class Nostr {
-    public function __construct(private string $handle, private \Closure $nip05_lookup) {
+    public function __construct(private string $baseurl, private \Closure $nip05_lookup) {
     }
     
-    public function __invoke(string $baseurl, HTTP $http, Respond $respond): void {
-        ($this->nip05_lookup)($this->handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $baseurl) {
+    public function __invoke(string $handle, HTTP $http, Respond $respond): void {
+        ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $handle, $baseurl) {
             $pubkey = $event->pubkey;
 
             $entity = [
-                "subject" => 'nostr:' . $this->handle,
+                "subject" => 'nostr:' . $handle,
                 "aliases" => [],
                 "properties"=> [],
                 "links" => [[
                     "rel" => "http://webfinger.net/rel/profile-page",
-                    "href" => $baseurl . '/@'.$pubkey
+                    "href" => $this->baseurl . '/@'.$pubkey
                 ]]
             ];
 
