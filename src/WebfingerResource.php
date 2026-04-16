@@ -63,6 +63,8 @@ final readonly class WebfingerResource {
                 $respond(headers:['Content-Type: application/jrd+json'], body:json_encode($entity));
             });
         }
+        
+        $respond(HTTPStatus::_400);
     }
     
 }

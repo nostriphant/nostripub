@@ -21,6 +21,10 @@ describe('webfinger', function() {
             ->get('/.well-known/webfinger')
             ->status->toBe('400');
     
+    it('responds with a 400 status code for an unknown resource type')
+            ->get('/.well-known/webfinger?resource=fubar%3Asocial%40rikmeijer.nl')
+            ->status->toBe('400');
+    
     it('responds with a 302 status code for a resource at a different domain')
             ->get('/.well-known/webfinger?resource=acct%3Asocial%40rikmeijer.nl')
             ->status->toBe('302');
