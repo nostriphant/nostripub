@@ -7,7 +7,6 @@ use nostriphant\NIP01\Key;
 final readonly class KeyRepository {
 
     public function __construct(private string $directory) {
-        
     }
 
     public function __invoke(string $identifier): array {
