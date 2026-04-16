@@ -2,6 +2,6 @@
 
 $router = require __DIR__ . '/routes.php';
 
-$endpoint = $router($_SERVER['PHP_SELF']);
+$endpoint = $router($_GET['self']);
 
 $endpoint(new nostriphant\nostripub\Respond);
