@@ -5,7 +5,7 @@ use nostriphant\nostripub\HTTP;
 use nostriphant\nostripub\HTTPStatus;
 use nostriphant\nostripub\Respond;
 
-readonly class Acct {
+readonly class Acct implements \nostriphant\nostripub\WebfingerResource {
     public function __construct(private string $baseurl, private \nostriphant\nostripub\KeyRepository $keys, private HTTP $http, private Respond $respond) {
     }
     

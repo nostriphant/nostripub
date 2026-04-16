@@ -4,7 +4,7 @@ namespace nostriphant\nostripub\WebfingerResource;
 
 use nostriphant\nostripub\Respond;
 
-readonly class Nostr {
+readonly class Nostr implements \nostriphant\nostripub\WebfingerResource {
     public function __construct(private string $baseurl, private \Closure $nip05_lookup, private Respond $respond) {
     }
     

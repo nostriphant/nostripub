@@ -12,7 +12,7 @@ readonly class Factory {
         
     }
 
-    public function __invoke(string $scheme): Acct|Nostr {
+    public function __invoke(string $scheme): \nostriphant\nostripub\WebfingerResource {
         $keys_Directory = CACHE_DIR . '/keys';
         is_dir($keys_Directory) || mkdir($keys_Directory);
         
