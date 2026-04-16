@@ -1,7 +1,5 @@
 <?php
 
-use nostriphant\nostripub\NIP05;
-use nostriphant\nostripub\KeyRepository;
 
 return new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
@@ -11,21 +9,15 @@ return new class implements nostriphant\nostripub\Endpoint {
             return;
         }
         $http = new \nostriphant\nostripub\HTTP(CACHE_DIR);
-        
-        $nip05_lookup = NIP05::lookup($http);
-        
-        $keys_Directory = CACHE_DIR . '/keys';
-        is_dir($keys_Directory) || mkdir($keys_Directory);
-        $keys = new KeyRepository($keys_Directory);
                 
         $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
         $browser_hostname = $_SERVER["HTTP_HOST"];
         $baseurl = $browser_scheme . '://' . $browser_hostname;
-        $factory = new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $keys, $nip05_lookup, $respond);
+        $factory = new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $http, $respond);
         
         $webfinger = new \nostriphant\nostripub\WebfingerResource($factory);
 
-        $webfinger($_GET['resource'], $http, $respond);
+        $webfinger($_GET['resource']);
 
     }
 };

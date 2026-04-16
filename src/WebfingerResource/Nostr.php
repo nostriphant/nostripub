@@ -2,15 +2,14 @@
 
 namespace nostriphant\nostripub\WebfingerResource;
 
-use nostriphant\nostripub\HTTP;
 use nostriphant\nostripub\Respond;
 
 readonly class Nostr {
-    public function __construct(private string $baseurl, private \Closure $nip05_lookup) {
+    public function __construct(private string $baseurl, private \Closure $nip05_lookup, private Respond $respond) {
     }
     
-    public function __invoke(string $handle, HTTP $http, Respond $respond): void {
-        ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $handle) {
+    public function __invoke(string $handle): void {
+        ($this->nip05_lookup)($handle, $this->respond)(function(\nostriphant\NIP01\Event $event) use ($handle) {
             $pubkey = $event->pubkey;
 
             $entity = [
@@ -38,7 +37,7 @@ readonly class Nostr {
                 ];
             }
 
-            $respond(headers:['Content-Type: application/jrd+json'], body:json_encode($entity));
+            ($this->respond)(headers:['Content-Type: application/jrd+json'], body:json_encode($entity));
         });
     }
 }
