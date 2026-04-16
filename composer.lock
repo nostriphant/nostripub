@@ -2138,16 +2138,16 @@
         },
         {
             "name": "nostriphant/secp256k1",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nostriphant/php-secp256k1.git",
-                "reference": "f6469f756a41e17fbbfdf53b9299af3a9e308e8d"
+                "reference": "08658351d05fd88756037d2d34d627aae30e5792"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nostriphant/php-secp256k1/zipball/f6469f756a41e17fbbfdf53b9299af3a9e308e8d",
-                "reference": "f6469f756a41e17fbbfdf53b9299af3a9e308e8d",
+                "url": "https://api.github.com/repos/nostriphant/php-secp256k1/zipball/08658351d05fd88756037d2d34d627aae30e5792",
+                "reference": "08658351d05fd88756037d2d34d627aae30e5792",
                 "shasum": ""
             },
             "require": {
@@ -2179,9 +2179,9 @@
             "description": "Wrapper around 1ma/secp256k1-nostr extension, falls back to simplito/elliptic (pure PHP implementation) when the extension is not available",
             "support": {
                 "issues": "https://github.com/nostriphant/php-secp256k1/issues",
-                "source": "https://github.com/nostriphant/php-secp256k1/tree/0.1.0"
+                "source": "https://github.com/nostriphant/php-secp256k1/tree/0.1.1"
             },
-            "time": "2026-04-16T07:52:19+00:00"
+            "time": "2026-04-16T11:10:21+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
