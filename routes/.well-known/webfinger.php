@@ -13,10 +13,10 @@ return new class implements nostriphant\nostripub\Endpoint {
         $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
         $browser_hostname = $_SERVER["HTTP_HOST"];
         $baseurl = $browser_scheme . '://' . $browser_hostname;
-        $factory = new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $http, $respond);
+        $webfinger = new nostriphant\nostripub\Webfinger($baseurl, $http, $respond);
         
         list($scheme, $handle) = explode(':', $_GET['resource'], 2);
-        $resource = $factory($scheme);
+        $resource = $webfinger($scheme);
         $resource($handle);
 
     }

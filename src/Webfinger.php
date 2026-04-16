@@ -1,11 +1,11 @@
 <?php
 
-namespace nostriphant\nostripub\WebfingerResource;
+namespace nostriphant\nostripub;
 
 use nostriphant\nostripub\NIP05;
 use nostriphant\nostripub\KeyRepository;
 
-readonly class Factory {
+readonly class Webfinger {
     
 
     public function __construct(private string $baseurl, private \nostriphant\nostripub\HTTP $http, private \nostriphant\nostripub\Respond $respond) {
