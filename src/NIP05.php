@@ -13,7 +13,8 @@ final readonly class NIP05 {
         
     }
     
-    public static function lookup(array $discovery_relays, HTTP $http) : callable {
+    public static function lookup(HTTP $http) : callable {
+        $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
         return function(string $nip05_identifier, Respond $respond) use ($discovery_relays, $http) : self {
             if (str_contains($nip05_identifier, '@')) {
                 list($nostr_user, $nostr_domain) = explode('@', $nip05_identifier, 2);

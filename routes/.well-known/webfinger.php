@@ -10,10 +10,9 @@ return new class implements nostriphant\nostripub\Endpoint {
             $respond(\nostriphant\nostripub\HTTPStatus::_400);
             return;
         }
-
-        $discovery_relays = array_map(fn(string $relay) => 'wss://'. $relay, array_filter($_ENV, fn(string $key) => str_starts_with($key, 'DISCOVERY_RELAY'), ARRAY_FILTER_USE_KEY));
         $http = new \nostriphant\nostripub\HTTP(CACHE_DIR);
-        $nip05_lookup = NIP05::lookup($discovery_relays, $http);
+        
+        $nip05_lookup = NIP05::lookup($http);
         
         $keys_Directory = CACHE_DIR . '/keys';
         is_dir($keys_Directory) || mkdir($keys_Directory);
@@ -22,7 +21,9 @@ return new class implements nostriphant\nostripub\Endpoint {
         $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
         $browser_hostname = $_SERVER["HTTP_HOST"];
         $baseurl = $browser_scheme . '://' . $browser_hostname;
-        $webfinger = new \nostriphant\nostripub\WebfingerResource(new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $keys, $nip05_lookup, $respond));
+        $factory = new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $keys, $nip05_lookup, $respond);
+        
+        $webfinger = new \nostriphant\nostripub\WebfingerResource($factory);
 
         $webfinger($_GET['resource'], $http, $respond);
 

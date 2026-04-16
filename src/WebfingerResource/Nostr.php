@@ -10,7 +10,7 @@ readonly class Nostr {
     }
     
     public function __invoke(string $handle, HTTP $http, Respond $respond): void {
-        ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $handle, $baseurl) {
+        ($this->nip05_lookup)($handle, $respond)(function(\nostriphant\NIP01\Event $event) use ($respond, $handle) {
             $pubkey = $event->pubkey;
 
             $entity = [
