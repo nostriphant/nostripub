@@ -10,7 +10,7 @@ beforeAll(function() use (&$process) {
         ];
         
         
-        $process = new \nostriphant\nostripubTests\Process('api', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
+        $process = new \nostriphant\nostripubTests\Process('api-nostr', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
         sleep(1);
 });
 

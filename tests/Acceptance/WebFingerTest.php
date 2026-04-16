@@ -12,7 +12,7 @@ beforeAll(function() use (&$process) {
         ];
         
         
-        $process = new \nostriphant\nostripubTests\Process('api', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
+        $process = new \nostriphant\nostripubTests\Process('api-webfinger', $cmd, $env, fn(string $line) => str_contains($line, 'Development Server (http://127.0.0.1:8080) started'));
         sleep(1);
 });
 
@@ -31,9 +31,9 @@ describe('webfinger', function() {
     
     $keys = new nostriphant\nostripub\KeyRepository(CACHE_DIR . '/keys');
     it('responds with a 200 status code for a resource at a different wrapped domain')
-            ->get('/.well-known/webfinger?resource=acct%3Asocial.at.rikmeijer.nl%40127.0.0.1:8080')
+            ->get('/.well-known/webfinger?resource=acct%3Asocial.at.rikmeijer.nl%40127.0.0.1')
             ->status->toBe('200')
-            ->subject->toBe('acct:social.at.rikmeijer.nl@127.0.0.1:8080')
+            ->subject->toBe('acct:social.at.rikmeijer.nl@127.0.0.1')
             ->aliases->toContain("http://127.0.0.1:8080/@" . $keys('social@rikmeijer.nl')['public_key']);
     
     it('responds with a 404 status code for a non-existing (or unretrievable) NIP-05 identifier, because wrong domain')
