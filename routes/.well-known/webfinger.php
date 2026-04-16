@@ -15,9 +15,9 @@ return new class implements nostriphant\nostripub\Endpoint {
         $baseurl = $browser_scheme . '://' . $browser_hostname;
         $factory = new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $http, $respond);
         
-        $webfinger = new \nostriphant\nostripub\WebfingerResource($factory);
-
-        $webfinger($_GET['resource']);
+        list($scheme, $handle) = explode(':', $_GET['resource'], 2);
+        $resource = $factory($scheme);
+        $resource($handle);
 
     }
 };
