@@ -4,7 +4,7 @@ namespace nostriphant\nostripub;
 
 final readonly class WebfingerResource {
 
-    public function __construct(private \Closure $scheme_factory) {
+    public function __construct(private WebfingerResource\Factory $scheme_factory) {
         
     }
 

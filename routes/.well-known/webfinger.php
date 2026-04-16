@@ -22,15 +22,7 @@ return new class implements nostriphant\nostripub\Endpoint {
         $browser_scheme = 'http'. ($_SERVER['HTTPS'] ?? 'off' !== 'off' ? 's' : '');
         $browser_hostname = $_SERVER["HTTP_HOST"];
         $baseurl = $browser_scheme . '://' . $browser_hostname;
-        $webfinger = new \nostriphant\nostripub\WebfingerResource(function(string $scheme) use ($baseurl, $keys, $nip05_lookup, $respond) {
-            if ($scheme === 'acct') {
-                return new \nostriphant\nostripub\WebfingerResource\Acct($baseurl, $keys);
-            } elseif ($scheme === 'nostr') {
-                return new \nostriphant\nostripub\WebfingerResource\Nostr($baseurl, $nip05_lookup);
-            } else {
-                $respond(\nostriphant\nostripub\HTTPStatus::_400);
-            }
-        });
+        $webfinger = new \nostriphant\nostripub\WebfingerResource(new nostriphant\nostripub\WebfingerResource\Factory($baseurl, $keys, $nip05_lookup, $respond));
 
         $webfinger($_GET['resource'], $http, $respond);
 
