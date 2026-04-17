@@ -21,7 +21,7 @@ describe('KeyRepository', function() {
         $repo = $this->repo;
         $keys = $repo('test@example.com');
         expect($keys)->toBeArray();
-        expect(array_keys($keys))->toEqual(['private_key', 'public_key']);
+        expect(array_keys($keys))->toEqual(['private_key', 'public_key', 'identifier']);
         expect($keys['private_key'])->toMatch('/^[a-f0-9]{64}$/');
         expect($keys['public_key'])->toMatch('/^[a-f0-9]{64}$/');
     });

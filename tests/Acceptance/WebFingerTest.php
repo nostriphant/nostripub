@@ -36,6 +36,12 @@ describe('webfinger', function() {
             ->subject->toBe('acct:social.at.rikmeijer.nl@127.0.0.1')
             ->aliases->toContain("http://127.0.0.1:8080/@" . $keys('social@rikmeijer.nl')['public_key']);
     
+    
+    it ('responds witha 200 status for an existing pubkey (linked to a activitypub account)')
+        ->get('/@' . $keys('social@rikmeijer.nl')['public_key'])
+            ->status->toBe('200')
+            ->body->toContain('social@rikmeijer');
+    
     it('responds with a 404 status code for a non-existing (or unretrievable) NIP-05 identifier, because wrong domain')
             ->get('/.well-known/webfinger?resource=nostr%3Abob%40example.tlb')
             ->status->toBe('404');
@@ -60,9 +66,6 @@ describe('webfinger', function() {
                             ]
                     ]);
     
-    it ('responds witha 200 status for an existing pubkey (linked to a activitypub account)')
-        ->get('/@ca447ffbd98356176bf1a1612676dbf744c2335bb70c1bc9b68b122b20d6eac6')
-            ->status->toBe('200');
         
             
     it('responds with a 200 status code for a different existing NIP-05 identifier (nostriphant@rikmeijer.nl) in a nostr scheme (NIP-21)')

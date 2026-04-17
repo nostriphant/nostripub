@@ -8,7 +8,7 @@ return function(string $path) : Endpoint {
     if (is_file($route_file) === false) {
         $route_directory = dirname($route_file);
         if (is_file($route_directory . '/index.php')) {
-            return require $route_directory . '/index.php';
+            return (require $route_directory . '/index.php')(basename($path));
         }
         
         return new class implements Endpoint {
@@ -18,6 +18,6 @@ return function(string $path) : Endpoint {
             }
         };
     }
-    return require $route_file;
+    return (require $route_file)(basename($path));
 };
 

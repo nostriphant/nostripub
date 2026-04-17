@@ -2,7 +2,7 @@
 
 use nostriphant\nostripub\KeyRepository;
 
-return new class implements nostriphant\nostripub\Endpoint {
+return fn() : nostriphant\nostripub\Endpoint => new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
     public function __invoke(nostriphant\nostripub\Respond $respond) {
         $keys = new KeyRepository(CACHE_DIR . '/keys');

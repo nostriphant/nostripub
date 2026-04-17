@@ -1,7 +1,7 @@
 <?php
 
 
-return new class implements nostriphant\nostripub\Endpoint {
+return fn() : nostriphant\nostripub\Endpoint => new class implements nostriphant\nostripub\Endpoint {
     #[\Override]
     public function __invoke(nostriphant\nostripub\Respond $respond) {
         if (isset($_GET['resource']) === false) {
