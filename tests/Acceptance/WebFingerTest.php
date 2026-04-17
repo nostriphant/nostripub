@@ -59,6 +59,11 @@ describe('webfinger', function() {
                                     "href"=> "https://gravatar.com/userimage/128219001/7b07009f6c5aff6f13b1050c1b354208.jpeg?size=256"
                             ]
                     ]);
+    
+    it ('responds witha 200 status for an existing pubkey (linked to a activitypub account)')
+        ->get('/@ca447ffbd98356176bf1a1612676dbf744c2335bb70c1bc9b68b122b20d6eac6')
+            ->status->toBe('200');
+        
             
     it('responds with a 200 status code for a different existing NIP-05 identifier (nostriphant@rikmeijer.nl) in a nostr scheme (NIP-21)')
             ->get('/.well-known/webfinger?resource=nostr%3Anostriphant%40rikmeijer.nl')
